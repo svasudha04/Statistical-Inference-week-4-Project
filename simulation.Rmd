@@ -1,0 +1,99 @@
+---
+title: "Exponential Distribution and Compairing with CLT"
+author: "Vasudha Singh"
+date: "December 6, 2018"
+output:
+  word_document: default
+  pdf_document: default
+---  
+
+install.packages("knitr")
+install.packages("markdown")
+install.packages("rmarkdown")  
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}   
+library(ggplot2) 
+```
+
+
+## Overview 
+
+In this project we will investigate the exponential distribution in R and compare it with the Central Limit Theorem. The mean of exponential distribution is 1/lambda and the standard deviation is also 1/lambda. For analysis purpose, we will set lambda = 0.2 for all of the simulations and this investigation will compare with the distribution of averages of 40 exponentials over 1000 Simulations.
+
+##Simulations
+
+Set the simulation variables and Run Simulation 
+
+```{r, echo=TRUE}
+set.seed(6817)
+n<-40
+lambda<-0.2
+nosim<-1000  
+
+simMeans <- NULL  
+for(i in 1:1000) simMeans= c(simMeans, mean(rexp(n, lambda)))  
+```  
+
+## Sample mean Versus Theoretical mean 
+###Sample Mean  
+Calculating mean from Simulations  
+
+```{r}  
+ mean(simMeans)  
+```  
+
+###Theoretical Mean  
+Calculating mean of Exponential distribution , whose mean is 1/ lambda  
+
+```{r}  
+ expMeans<-1/lambda  
+ expMeans
+```  
+###Comparison between Sample Mean and Theoretical Mean  
+
+```{r}  
+ abs(mean(simMeans)-expMeans)  
+```  
+
+This shows that the Center of distribution of Sample Mean `r mean(simMeans)` is closely related to Theoretical Mean `r expMeans`.  
+
+
+## Sample Variance Versus Theoretical Variance  
+###Sample Variance  
+Calculating Variance and Standard deviation from Simulations   
+
+```{r}  
+ var(simMeans)  
+ sd(simMeans)  
+```  
+
+###Theoretical Variance   
+Calculating Variance of Exponential distribution and standard deviation  
+
+```{r}  
+ expVariance<-(1/lambda)^2/(n)   
+ expVariance
+ expStdev<- 1/(lambda*sqrt(n))  
+ expStdev
+```  
+###Comparison between Sample Variance and Theoretical Variance  
+
+```{r}  
+abs(var(simMeans)-expVariance)  
+```  
+This shows that the variability  of distribution of Sample Variance `r var(simMeans)` is closely related to Theoretical Variance `r expVariance`.  
+
+##Distribution  
+###Show that distribution is approximately Normal.  
+The Histogram plot of the means of 1000 simulations is overlaid with the normal distribution with mean `r expMeans` and standard deviation `r expStdev`.  
+This shows the distribution of simulation is normal.  
+
+```{r}  
+g<-ggplot(data.frame(y=simMeans), aes(x=y))  
+g<- g+ geom_histogram(aes(y=..density..), binwidth= 0.2, fill="blue", color="red") +
+  stat_function(fun=dnorm,args=list(mean=expMeans, sd=expStdev), size=2)+
+  ggtitle('Simulation Plot')+ xlab('Simulation mean')+ ylab('density')  
+g
+
+```  
